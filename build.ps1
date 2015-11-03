@@ -2,7 +2,7 @@
 
 Remove-Module [p]sake
 
-$psakeModule = (Get-ChildItem (".\packages\psake*\tools\psake.psm1")).FullName | Sort-Object $_ | Select-Object -last 1
+$psakeModule = (Get-ChildItem (".\Build\psake*\tools\psake.psm1")).FullName | Sort-Object $_ | Select-Object -last 1
 
 Import-Module $psakeModule
 
