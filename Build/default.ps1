@@ -1,6 +1,4 @@
 ﻿properties {
-	$testMessage = "Executed test"
-
 	$solutionDirectory = (Get-Item $solutionFile).DirectoryName
 	$outputDirectory = "$solutionDirectory\.build"
 	$temporaryOutputDirectory = "$outputDirectory\temp"
@@ -35,10 +33,17 @@ task Init -description "Initialises the build by removing previous artifacts
 	New-Item $temporaryOutputDirectory -ItemType Directory | Out-Null	
 }
 
-task Compile -depends Init {
+task Compile -depends Init, Package-Restore {
 	Write-Host "Building solution $solutionFile"
 	Exec {
 		msbuild $solutionFile "/p:Configuration=$buildConfiguration;Platform=$buildPlatform;OutDir=$temporaryOutputDirectory"
+	}
+}
+
+task Package-Restore -description "Resotres all nuget packages for the projects in the solution" {
+	Write-Host "Restoring nuget packages for packages in solution"
+	Exec {
+		Start-Process -FilePath $solutionDirectory\Build\nuget.exe -ArgumentList "restore $solutionFile"
 	}
 }
 
@@ -47,5 +52,5 @@ task Clean -description "Remove temporary files" {
 }
 
 task Test -depends Compile, Clean {
-	Write-Host $testMessage
+	Write-Host "Executing tests!"
 }
